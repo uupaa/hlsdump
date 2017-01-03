@@ -1,0 +1,90 @@
+<!DOCTYPE html><html><head><title>HLSDump test</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<meta charset="utf-8"></head><body>
+
+<script src="../../lib/WebModule.js"></script>
+<script>
+WebModule.VERIFY  = false; // true;
+WebModule.VERBOSE = false; // true;
+WebModule.PUBLISH = true;  // true;
+</script>
+
+<script src="../../node_modules/uupaa.useragent.js/node_modules/uupaa.webgldetector.js/lib/WebGLDetector.js"></script>
+<script src="../../node_modules/uupaa.useragent.js/lib/UserAgent.js"></script>
+<script src="../../node_modules/uupaa.hexdump.js/lib/HexDump.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.uri.js/lib/URISearchParams.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.uri.js/lib/URI.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.fileloader.js/lib/FileLoader.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.fileloader.js/lib/FileLoaderQueue.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.aacprofile.js/lib/AACProfile.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.h264profile.js/lib/H264Profile.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/lib/M3U8.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/lib/M3U8Segment.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/lib/M3U8Spooler.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/node_modules/uupaa.bit.js/lib/Bit.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/node_modules/uupaa.bit.js/lib/BitView.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitType.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitParameterSet.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitEBSP.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitAUD.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitSPS.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitPPS.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitSEI.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitIDR.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnitNON_IDR.js"></script>
+<script src="../../node_modules/uupaa.nalunit.js/lib/NALUnit.js"></script>
+<script src="../../node_modules/uupaa.aac.js/node_modules/uupaa.hash.js/lib/Hash.js"></script>
+<script src="../../node_modules/uupaa.aac.js/lib/AAC.js"></script>
+<script src="../../node_modules/uupaa.aac.js/lib/ADTS.js"></script>
+<script src="../../node_modules/uupaa.mpeg2ts.js/lib/MPEG2TSNALUnit.js"></script>
+<script src="../../node_modules/uupaa.mpeg2ts.js/lib/MPEG2TSDemuxer.js"></script>
+<script src="../../node_modules/uupaa.mpeg2ts.js/lib/MPEG2TS.js"></script>
+<script src="../../node_modules/uupaa.filestore.js/node_modules/uupaa.mimetype.js/lib/MimeType.js"></script>
+<script src="../../node_modules/uupaa.filestore.js/lib/FileStoreSandBox.js"></script>
+<script src="../../node_modules/uupaa.filestore.js/lib/FileStore.js"></script>
+<script src="../../node_modules/uupaa.mp4muxer.js/node_modules/uupaa.mp4parser.js/node_modules/uupaa.typedarray.js/lib/TypedArray.js"></script>
+<script src="../../node_modules/uupaa.mp4muxer.js/node_modules/uupaa.mp4parser.js/lib/MP4Parser.js"></script>
+<script src="../../node_modules/uupaa.mp4muxer.js/lib/MP4Muxer.js"></script>
+<script src="../../node_modules/uupaa.mp4builder.js/lib/MP4Builder.js"></script>
+<script src="../wmtools.js"></script>
+<script src="../../lib/HLSDump.js"></script>
+
+<input type="checkbox" id="m3u8" value="m3u8" checked />m3u8
+<input type="checkbox" id="ts" value="ts" checked />ts
+<input type="checkbox" id="aac" value="aac" checked />aac
+<input type="checkbox" id="mp4" value="mp4" checked />mp4
+<input type="checkbox" id="pcm" value="pcm" checked />pcm
+<hr />
+<input id="url" type="text" value="" placeholder="http://.../playlist.m3u8" style="width:40%" />
+<input type="button" value="rec" onclick="__rec()" />
+<input type="button" value="stop" onclick="__stop()" />
+
+<script>
+var rec = null;
+function __rec() {
+    var url = document.querySelector("#url").value || "";
+
+    rec = new HLSDump(url, {
+        dir:            "", // mkdir "test/browser/{timestamp}/"
+        autoStart:      false,
+        bulkDuration:   1,
+        readyCallback:  function() {
+            rec.start();
+        },
+        endList:        true,
+        m3u8:           !!document.querySelector("#m3u8").checked,
+        ts:             !!document.querySelector("#ts").checked,
+        aac:            !!document.querySelector("#aac").checked,
+        mp4:            !!document.querySelector("#mp4").checked,
+        pcm:            !!document.querySelector("#pcm").checked,
+    });
+}
+function __stop() {
+    if (rec) {
+        rec.stop();
+    }
+}
+</script>
+
+</body></html>
+

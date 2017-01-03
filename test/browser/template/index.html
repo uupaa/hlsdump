@@ -1,20 +1,17 @@
-# hlsdump [![Build Status](https://travis-ci.org/uupaa/hlsdump.svg)](https://travis-ci.org/uupaa/hlsdump)
+<!DOCTYPE html><html><head><title>HLSDump test</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<meta charset="utf-8"></head><body>
 
-[![npm](https://nodei.co/npm/uupaa.hlsdump.svg?downloads=true&stars=true)](https://nodei.co/npm/uupaa.hlsdump/)
+<script src="../../lib/WebModule.js"></script>
+<script>
+WebModule.VERIFY  = false; // __WEBMODULE_VERIFY__;
+WebModule.VERBOSE = false; // __WEBMODULE_VERBOSE__;
+WebModule.PUBLISH = true;  // __WEBMODULE_PUBLISH__;
+</script>
 
-HLS recorder
-
-This module made of [WebModule](https://github.com/uupaa/WebModule).
-
-## Documentation
-- [Spec](https://github.com/uupaa/hlsdump/wiki/)
-- [API Spec](https://github.com/uupaa/hlsdump/wiki/)
-
-## Browser, Node.js, NW.js and Electron
-
-```js
-<script src="<module-dir>/lib/WebModule.js"></script>
-<script src="<module-dir>/lib/HLSDump.js"></script>
+__MODULES__
+__WMTOOLS__
+__SOURCES__
 
 <input type="checkbox" id="m3u8" value="m3u8" checked />m3u8
 <input type="checkbox" id="ts" value="ts" checked />ts
@@ -27,18 +24,18 @@ This module made of [WebModule](https://github.com/uupaa/WebModule).
 <input type="button" value="stop" onclick="__stop()" />
 
 <script>
-
 var rec = null;
 function __rec() {
     var url = document.querySelector("#url").value || "";
 
     rec = new HLSDump(url, {
+        dir:            "", // mkdir "test/browser/{timestamp}/"
         autoStart:      false,
-        dir:            "", // mkdir "test/el/{timestamp}/"
         bulkDuration:   1,
         readyCallback:  function() {
             rec.start();
         },
+        endList:        true,
         m3u8:           !!document.querySelector("#m3u8").checked,
         ts:             !!document.querySelector("#ts").checked,
         aac:            !!document.querySelector("#aac").checked,
@@ -51,14 +48,7 @@ function __stop() {
         rec.stop();
     }
 }
-
 </script>
-```
 
-## Node.js
-
-```sh
-node index.js --help        # usage
-node index.js -d <output-dir> -m3u8 -ts -aac -mp4
-```
+</body></html>
 

@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><title>HLSDump test</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<meta charset="utf-8"></head><body>
+
+<script src="../../lib/WebModule.js"></script>
+<script>
+WebModule.VERIFY  = false; // __WEBMODULE_VERIFY__;
+WebModule.VERBOSE = false; // __WEBMODULE_VERBOSE__;
+WebModule.PUBLISH = true;  // __WEBMODULE_PUBLISH__;
+</script>
+
+__MODULES__
+__WMTOOLS__
+__SOURCES__
+
+HLSDump( <input id="url" type="text" value="" placeholder="http://.../playlist.m3u8" style="width:80%" />, {<br>
+&emsp;dir:  <input type="input" id="dir" value="" placeholder="output dir" />,<br>
+&emsp;m3u8: <input type="checkbox" id="m3u8" /> (create {nnnn}.m3u8),<br>
+&emsp;ts:   <input type="checkbox" id="ts" checked /> (create {nnnn}.ts),<br>
+&emsp;aac:  <input type="checkbox" id="aac" checked /> (create {nnnn}.aac),<br>
+&emsp;mp4:  <input type="checkbox" id="mp4" checked /> (create {nnnn}.mp4),<br>
+&emsp;pcm:  <input type="checkbox" id="pcm" /> (create {nnnn}.raw),<br>
+&emsp;endList: <input type="checkbox" id="EXT-X-ENDLIST" checked /> (add #EXT-X-ENDLIST),<br>
+});
+<hr />
+<input type="button" value="rec" onclick="__rec()" />
+<input type="button" value="stop" onclick="__stop()" /><br>
+<span id="output-dir" style="color:silver"></span>
+<hr />
+tsID: <span id="tsID"></span><br>
+state: <span id="state" style="width: 200px"></span>
+
+<script>
+window.onload = function() {
+    document.querySelector("#url").value = localStorage["hlsdump_url"] || "";
+};
+
+var dump = null;
+
+function __rec() {
+    var url = document.querySelector("#url").value || "";
+
+    if (!url) {
+        alert("url empty");
+    } else {
+        localStorage["hlsdump_url"] = document.querySelector("#url").value;
+
+        dump = new HLSDump(url, {
+            dir:            "", // mkdir "test/el/{timestamp}/"
+            autoStart:      false,
+            bulkDuration:   1,
+            readyCallback:  function() {
+                dump.start();
+            },
+            updateCallback: function(type, spooler, props) {
+                switch (type) {
+                case "error":  document.body.style.backgroundColor = "red";
+                               document.querySelector("#state").textContent = "error"; break;
+                case "update": document.querySelector("#state").textContent = "update";
+                               document.querySelector("#output-dir").textContent = "http://localhost:8000/hlsdump/test/el/" + dump.playlistURL; break;
+                case "ts":     document.querySelector("#state").textContent = "load ts";
+                               document.querySelector("#tsID").textContent = props.tsID; break;
+                case "end":    document.querySelector("#state").textContent = "end"; break;
+                }
+            },
+            endList:        true,
+            m3u8:           !!document.querySelector("#m3u8").checked,
+            ts:             !!document.querySelector("#ts").checked,
+            aac:            !!document.querySelector("#aac").checked,
+            mp4:            !!document.querySelector("#mp4").checked,
+            pcm:            !!document.querySelector("#pcm").checked,
+            endList:        !!document.querySelector("#EXT-X-ENDLIST").checked,
+        });
+    }
+}
+
+function __stop() {
+    if (dump) {
+        dump.stop();
+    }
+}
+</script>
+
+</body></html>
+
