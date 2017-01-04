@@ -2,12 +2,16 @@
 
 [![npm](https://nodei.co/npm/uupaa.hlsdump.svg?downloads=true&stars=true)](https://nodei.co/npm/uupaa.hlsdump/)
 
-HLS recorder
+HLS dump tool.
+
+Download a playlist and media segment files from server, Save a m3u8, ts, aac, pcm and mp4 files to local.
+
+You can reproduce the behavior of the server using the locally saved playlist.
 
 This module made of [WebModule](https://github.com/uupaa/WebModule).
 
 ## Documentation
-- [Spec](https://github.com/uupaa/hlsdump/wiki/)
+- [Overview](https://github.com/uupaa/hlsdump/wiki/)
 - [API Spec](https://github.com/uupaa/hlsdump/wiki/)
 
 ## Browser, Node.js, NW.js and Electron
@@ -16,8 +20,6 @@ This module made of [WebModule](https://github.com/uupaa/WebModule).
 <script src="<module-dir>/lib/WebModule.js"></script>
 <script src="<module-dir>/lib/HLSDump.js"></script>
 
-<input type="checkbox" id="m3u8" value="m3u8" checked />m3u8
-<input type="checkbox" id="ts" value="ts" checked />ts
 <input type="checkbox" id="aac" value="aac" checked />aac
 <input type="checkbox" id="mp4" value="mp4" checked />mp4
 <input type="checkbox" id="pcm" value="pcm" checked />pcm
@@ -28,27 +30,36 @@ This module made of [WebModule](https://github.com/uupaa/WebModule).
 
 <script>
 
-var rec = null;
+var dump = null;
+
 function __rec() {
     var url = document.querySelector("#url").value || "";
 
-    rec = new HLSDump(url, {
+    dump = new HLSDump(url, {
         autoStart:      false,
-        dir:            "", // mkdir "test/el/{timestamp}/"
+        dir:            "", // mkdir "test/el/{timestamp}/" dir
+        autoStart:      false,
         bulkDuration:   1,
         readyCallback:  function() {
-            rec.start();
+            dump.start();
         },
-        m3u8:           !!document.querySelector("#m3u8").checked,
-        ts:             !!document.querySelector("#ts").checked,
+        updateCallback: function(type, spooler, props) {
+            switch (type) {
+            case "error":  break;
+            case "update": break;
+            case "ts":     break;
+            case "end":    break;
+            }
+        },
         aac:            !!document.querySelector("#aac").checked,
         mp4:            !!document.querySelector("#mp4").checked,
         pcm:            !!document.querySelector("#pcm").checked,
+        live:           !!document.querySelector("#live").checked,
     });
 }
 function __stop() {
-    if (rec) {
-        rec.stop();
+    if (dump) {
+        dump.stop();
     }
 }
 
@@ -58,7 +69,10 @@ function __stop() {
 ## Node.js
 
 ```sh
-node index.js --help        # usage
-node index.js -d <output-dir> -m3u8 -ts -aac -mp4
+# show usage
+node index.js --help
+
+# dump playlist, ts and aac files
+node index.js -d <output-dir> -aac -live http://example.com/playlist.m3u8
 ```
 

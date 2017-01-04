@@ -7,13 +7,11 @@ var USAGE = _multiline(function() {/*
         node bin/hlsdump [-h or --help]
                          [-v or --verbose]
                          [-d output-dir]
-                         [-m3u8]
-                         [-ts]
                          [-aac]
                          [-mp4]
                          [-pcm]
-                         [-noend]
-                         input-file      # http://example.com/playlist.m3u8
+                         [-live]
+                         playlist.m3u8      # http://example.com/playlist.m3u8
 
     See:
         https://github.com/uupaa/hlsdump/wiki/
@@ -69,22 +67,20 @@ var HLSDump = require("./lib/HLSDump.js");
 
 //var fs      = require("fs");
 //var cp      = require("child_process");
-var wmlib   = process.argv[1].split("/").slice(0, -2).join("/") + "/lib/"; // "WebModule/lib/"
+//var wmlib   = process.argv[1].split("/").slice(0, -2).join("/") + "/lib/"; // "WebModule/lib/"
 var argv    = process.argv.slice(2);
 var options = _parseCommandLineOptions({
         help:       false,      // Boolean: show help.
         verbose:    false,      // Boolean: verbose mode.
         dir:        "",         // String: output dir.
-        input:      "",         // String: input file. playlist.m3u8
-        m3u8:       false,      // Boolean: save m3u8
-        ts:         false,      // Boolean: save ts file
+        playlist:   "",         // String: playlist.m3u8
         aac:        false,      // Boolean: save aac file
         mp4:        false,      // Boolean: save mp4 file
         pcm:        false,      // Boolean: save pcm
-        endList:    true,       // Boolean: add #EXT-X-ENDLIST to m3u8
+        live:       true,       // Boolean: live
     });
 
-if (options.help || options.input === "") {
+if (options.help || options.playlist === "") {
     console.log(CONSOLE_COLOR.YELLOW + USAGE + CONSOLE_COLOR.CLEAR);
     return;
 }
@@ -92,19 +88,17 @@ if (options.help || options.input === "") {
 if (options.verbose) {
 }
 
-var rec = new HLSDump(options.input, {
+var dump = new HLSDump(options.playlist, {
     dir:            options.dir, // "./" or "./{timestamp}/"
     autoStart:      false,
     bulkDuration:   1,
     readyCallback:  function() {
-        rec.start();
+        dump.start();
     },
-    m3u8:           options.m3u8,
-    ts:             options.ts,
     aac:            options.aac,
     mp4:            options.mp4,
     pcm:            options.pcm,
-    endList:        options.endList,
+    live:           options.live,
 });
 
 function _parseCommandLineOptions(options) { // @arg Object:
@@ -116,13 +110,11 @@ function _parseCommandLineOptions(options) { // @arg Object:
         case "-v":
         case "--verbose":   options.verbose = true; break;
         case "-d":          options.outputdir = argv[++i]; break;
-        case "-m3u8":       options.m3u8 = true; break;
-        case "-ts":         options.ts = true; break;
         case "-aac":        options.aac = true; break;
         case "-mp4":        options.mp4 = true; break;
         case "-pcm":        options.pcm = true; break;
-        case "-noend":      options.endList = false; break;
-        default:            options.input = argv[i];
+        case "-live":       options.live = false; break;
+        default:            options.playlist = argv[i];
         }
     }
     return options;
