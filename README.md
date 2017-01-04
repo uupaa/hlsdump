@@ -12,57 +12,19 @@ This module made of [WebModule](https://github.com/uupaa/WebModule).
 
 ## Documentation
 - [Overview](https://github.com/uupaa/hlsdump/wiki/)
-- [API Spec](https://github.com/uupaa/hlsdump/wiki/)
+- [API Spec](https://github.com/uupaa/hlsdump/wiki/HLSDump)
+
+## Browser
+
+```sh
+$ npm run browser  # run at default Browser
+                   # I will works, but can not save the file.
+```
 
 ## Electron
 
-```js
-<script src="<module-dir>/lib/WebModule.js"></script>
-<script src="<module-dir>/lib/HLSDump.js"></script>
-
-<input type="checkbox" id="aac" value="aac" checked />aac
-<input type="checkbox" id="mp4" value="mp4" checked />mp4
-<input type="checkbox" id="pcm" value="pcm" checked />pcm
-<hr />
-<input id="url" type="text" value="" placeholder="http://.../playlist.m3u8" style="width:40%" />
-<input type="button" value="rec" onclick="__rec()" />
-<input type="button" value="stop" onclick="__stop()" />
-
-<script>
-
-var dump = null;
-
-function __rec() {
-    var url = document.querySelector("#url").value || "";
-
-    dump = new HLSDump(url, {
-        autoStart:      false,
-        dir:            "", // mkdir "test/el/{timestamp}/" dir
-        autoStart:      false,
-        bulkDuration:   1,
-        readyCallback:  function() {
-            dump.start();
-        },
-        updateCallback: function(type, spooler, props) {
-            switch (type) {
-            case "error":  break;
-            case "update": break;
-            case "ts":     break;
-            case "end":    break;
-            }
-        },
-        aac:            !!document.querySelector("#aac").checked,
-        mp4:            !!document.querySelector("#mp4").checked,
-        pcm:            !!document.querySelector("#pcm").checked,
-    });
-}
-function __stop() {
-    if (dump) {
-        dump.stop();
-    }
-}
-
-</script>
+```sh
+$ npm run el  # run at Electron
 ```
 
 ## Node.js
