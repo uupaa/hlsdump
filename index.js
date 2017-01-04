@@ -4,14 +4,16 @@
 
 var USAGE = _multiline(function() {/*
     Usage:
-        node bin/hlsdump [-h or --help]
-                         [-v or --verbose]
-                         [-d output-dir]
-                         [-aac]
-                         [-mp4]
-                         [-pcm]
-                         [-live]
-                         playlist.m3u8      # http://example.com/playlist.m3u8
+        node index.js [-h or --help]
+                      [-v or --verbose]
+                      [-d output-dir]
+                      [-aac]
+                      [-mp4]
+                      [-pcm]
+                      playlist.m3u8      # http://example.com/playlist.m3u8
+
+    Example:
+        node index.js https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
 
     See:
         https://github.com/uupaa/hlsdump/wiki/
@@ -77,7 +79,6 @@ var options = _parseCommandLineOptions({
         aac:        false,      // Boolean: save aac file
         mp4:        false,      // Boolean: save mp4 file
         pcm:        false,      // Boolean: save pcm
-        live:       true,       // Boolean: live
     });
 
 if (options.help || options.playlist === "") {
@@ -98,7 +99,6 @@ var dump = new HLSDump(options.playlist, {
     aac:            options.aac,
     mp4:            options.mp4,
     pcm:            options.pcm,
-    live:           options.live,
 });
 
 function _parseCommandLineOptions(options) { // @arg Object:
@@ -113,7 +113,6 @@ function _parseCommandLineOptions(options) { // @arg Object:
         case "-aac":        options.aac = true; break;
         case "-mp4":        options.mp4 = true; break;
         case "-pcm":        options.pcm = true; break;
-        case "-live":       options.live = false; break;
         default:            options.playlist = argv[i];
         }
     }

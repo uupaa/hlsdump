@@ -14,7 +14,7 @@ This module made of [WebModule](https://github.com/uupaa/WebModule).
 - [Overview](https://github.com/uupaa/hlsdump/wiki/)
 - [API Spec](https://github.com/uupaa/hlsdump/wiki/)
 
-## Browser, Node.js, NW.js and Electron
+## Electron
 
 ```js
 <script src="<module-dir>/lib/WebModule.js"></script>
@@ -54,7 +54,6 @@ function __rec() {
         aac:            !!document.querySelector("#aac").checked,
         mp4:            !!document.querySelector("#mp4").checked,
         pcm:            !!document.querySelector("#pcm").checked,
-        live:           !!document.querySelector("#live").checked,
     });
 }
 function __stop() {
@@ -69,10 +68,22 @@ function __stop() {
 ## Node.js
 
 ```sh
-# show usage
-node index.js --help
+# show help
+$ node index.js --help
 
 # dump playlist, ts and aac files
-node index.js -d <output-dir> -aac -live http://example.com/playlist.m3u8
+$ node index.js -d 12345 -aac https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
+
+mkdir ./12345/
+tsID=4930,rLL
+tsID=4931,UrC
+tsID=4932,UUrC
+tsID=4933,UUUrC
+tsID=4934,UUUUrC
+tsID=4935,UUUUUrC
+tsID=4936,UUUUUUrC
+tsID=4937,UUUUUUUrC
+tsID=4938,UUUUUUUUrC
+ :
 ```
 
