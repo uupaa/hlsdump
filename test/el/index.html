@@ -14,8 +14,8 @@ WebModule.PUBLISH = true;  // true;
 <script src="../../node_modules/uupaa.hexdump.js/lib/HexDump.js"></script>
 <script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.uri.js/lib/URISearchParams.js"></script>
 <script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.uri.js/lib/URI.js"></script>
-<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.fileloader.js/lib/FileLoader.js"></script>
-<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.fileloader.js/lib/FileLoaderQueue.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.fileloader.js/lib/FileLoader.js"></script>
+<script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.fileloader.js/lib/FileLoaderQueue.js"></script>
 <script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.aacprofile.js/lib/AACProfile.js"></script>
 <script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/node_modules/uupaa.h264profile.js/lib/H264Profile.js"></script>
 <script src="../../node_modules/uupaa.m3u8spooler.js/node_modules/uupaa.m3u8.js/lib/M3U8.js"></script>
@@ -51,17 +51,16 @@ WebModule.PUBLISH = true;  // true;
 
 HLSDump( <input id="url" type="text" value="" placeholder="http://.../playlist.m3u8" style="width:80%" />, {<br>
 &emsp;dir:  <input type="input" id="dir" value="" placeholder="output dir" />,<br>
-&emsp;m3u8: <input type="checkbox" id="m3u8" /> (create {nnnn}.m3u8),<br>
 &emsp;ts:   <input type="checkbox" id="ts" checked /> (create {nnnn}.ts),<br>
 &emsp;aac:  <input type="checkbox" id="aac" checked /> (create {nnnn}.aac),<br>
 &emsp;mp4:  <input type="checkbox" id="mp4" checked /> (create {nnnn}.mp4),<br>
 &emsp;pcm:  <input type="checkbox" id="pcm" /> (create {nnnn}.raw),<br>
-&emsp;endList: <input type="checkbox" id="EXT-X-ENDLIST" checked /> (add #EXT-X-ENDLIST),<br>
+&emsp;live: <input type="checkbox" id="live" checked />,<br>
 });
 <hr />
 <input type="button" value="rec" onclick="__rec()" />
-<input type="button" value="stop" onclick="__stop()" /><br>
-<input type="button" value="toggleEndList" onclick="__toggleEndList()" /><br>
+<input type="button" value="stop" onclick="__stop()" />
+<hr />
 <span id="output-dir" style="color:silver"></span>
 <hr />
 tsID: <span id="tsID"></span><br>
@@ -76,6 +75,7 @@ var dump = null;
 
 function __rec() {
     var url = document.querySelector("#url").value || "";
+    var dir = document.querySelector("#dir").value || "";
 
     if (!url) {
         alert("url empty");
@@ -83,10 +83,13 @@ function __rec() {
         localStorage["hlsdump_url"] = document.querySelector("#url").value;
 
         dump = new HLSDump(url, {
-            dir:            "", // mkdir "test/el/{timestamp}/"
+            dir:            dir, // mkdir "test/el/{timestamp}/"
             autoStart:      false,
             bulkDuration:   1,
             readyCallback:  function() {
+                if (!dir) {
+                    document.querySelector("#dir").value = dump.dir;
+                }
                 dump.start();
             },
             updateCallback: function(type, spooler, props) {
@@ -100,13 +103,11 @@ function __rec() {
                 case "end":    document.querySelector("#state").textContent = "end"; break;
                 }
             },
-            endList:        true,
-            m3u8:           !!document.querySelector("#m3u8").checked,
             ts:             !!document.querySelector("#ts").checked,
             aac:            !!document.querySelector("#aac").checked,
             mp4:            !!document.querySelector("#mp4").checked,
             pcm:            !!document.querySelector("#pcm").checked,
-            endList:        !!document.querySelector("#EXT-X-ENDLIST").checked,
+            live:           !!document.querySelector("#live").checked,
         });
     }
 }
