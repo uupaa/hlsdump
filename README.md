@@ -34,25 +34,27 @@ Show usage.
 ```sh
 $ node index.js --help
 
->      Usage:
->          Dump(store hls files to local):
->              node index.js [-h or --help]            # show help
->                            [-v or --verbose]         # verbose mode
->                            [-d or --dir output-dir]  # output dir
->                            [-aac]                    # create aac files
->                            [-mp4]                    # create mp4 files
->                            [-pcm]                    # create pcm files
->                            playlist.m3u8             # dump target playlist eg: http://example.com/playlist.m3u8
+>    Usage:
+>        Dump(store hls files to local):
+>            node index.js [-h or --help]                # show help
+>                          [-v or --verbose]             # verbose mode
+>                          [-d or --dir <output-dir>]    # output dir
+>                          [-aac]                        # create aac files
+>                          [-mp4]                        # create mp4 files
+>                          [-pcm]                        # create pcm files
+>                          playlist.m3u8                 # dump target playlist eg: http://example.com/playlist.m3u8
 >
->          Server(reproduce hls file):
->              node index.js [-s or --server]          # run hls server
->                            [-p or --port number]     # port number. default 8888
+>        Server(reproduce hls file):
+>            node index.js [-s or --server]              # run hls server
+>                          [-p or --port <number>]       # port number. default 8888
+>                          [-t or --start-time <number>] # start time (sec). default 0.0
+                           [-l or --live-loop]           # loop playback in live
 >
->      Example:
->          node index.js https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
+>    Example:
+>        node index.js https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
 >
->      See:
->          https://github.com/uupaa/hlsdump/wiki/
+>    See:
+>        https://github.com/uupaa/hlsdump/wiki/
 ```
 
 

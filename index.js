@@ -5,17 +5,19 @@
 var USAGE = _multiline(function() {/*
     Usage:
         Dump(store hls files to local):
-            node index.js [-h or --help]            # show help
-                          [-v or --verbose]         # verbose mode
-                          [-d or --dir output-dir]  # output dir
-                          [-aac]                    # create aac files
-                          [-mp4]                    # create mp4 files
-                          [-pcm]                    # create pcm files
-                          playlist.m3u8             # dump target playlist eg: http://example.com/playlist.m3u8
+            node index.js [-h or --help]                # show help
+                          [-v or --verbose]             # verbose mode
+                          [-d or --dir <output-dir>]    # output dir
+                          [-aac]                        # create aac files
+                          [-mp4]                        # create mp4 files
+                          [-pcm]                        # create pcm files
+                          playlist.m3u8                 # dump target playlist eg: http://example.com/playlist.m3u8
 
         Server(reproduce hls file):
-            node index.js [-s or --server]          # run hls server
-                          [-p or --port number]     # port number. default 8888
+            node index.js [-s or --server]              # run hls server
+                          [-p or --port <number>]       # port number. default 8888
+                          [-t or --start-time <number>] # start time (sec). default 0.0
+                          [-l or --live-loop]           # loop playback in live
 
     Example:
         node index.js https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
@@ -86,6 +88,8 @@ var options = _parseCommandLineOptions({
         pcm:        false,      // Boolean: save pcm
         server:     false,      // Boolean:
         port:       0,          // UINT32: port number
+        startTime:  0,          // UINT32: start time (msec)
+        liveLoop:   false,      // Boolean:
     });
 
 if (options.help || (!options.server && !options.playlist)) {
@@ -97,6 +101,8 @@ if (options.server) {
     var server = new HLSDumpServer({
             verbose:        options.verbose,
             port:           options.port,
+            startTime:      options.startTime,
+            liveLoop:       options.liveLoop,
         });
 } else {
     var dump = new HLSDump(options.playlist, {
@@ -130,6 +136,10 @@ function _parseCommandLineOptions(options) { // @arg Object:
         case "--port":      options.port = parseInt(argv[++i], 10); break;
         case "-s":
         case "--server":    options.server = true; break;
+        case "-t":
+        case "--start-time":options.startTime = (parseFloat(argv[++i]) * 1000) | 0; break;
+        case "-l":
+        case "--live-loop": options.liveLoop = true; break;
         default:            options.playlist = argv[i];
         }
     }
