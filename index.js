@@ -4,13 +4,18 @@
 
 var USAGE = _multiline(function() {/*
     Usage:
-        node index.js [-h or --help]
-                      [-v or --verbose]
-                      [-d output-dir]
-                      [-aac]
-                      [-mp4]
-                      [-pcm]
-                      playlist.m3u8      # http://example.com/playlist.m3u8
+        Dump(store hls files to local):
+            node index.js [-h or --help]            # show help
+                          [-v or --verbose]         # verbose mode
+                          [-d or --dir output-dir]  # output dir
+                          [-aac]                    # create aac files
+                          [-mp4]                    # create mp4 files
+                          [-pcm]                    # create pcm files
+                          playlist.m3u8             # dump target playlist eg: http://example.com/playlist.m3u8
+
+        Server(reproduce hls file):
+            node index.js [-s or --server]          # run hls server
+                          [-p or --port number]     # port number. default 8888
 
     Example:
         node index.js https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8
@@ -65,9 +70,9 @@ require("./node_modules/uupaa.mp4muxer.js/node_modules/uupaa.mp4parser.js/lib/MP
 require("./node_modules/uupaa.mp4muxer.js/lib/MP4Muxer.js");
 require("./node_modules/uupaa.mp4builder.js/lib/MP4Builder.js");
 
+var HLSDumpServer = require("./lib/HLSDumpServer.js");
 var HLSDump = require("./lib/HLSDump.js");
 
-//var fs      = require("fs");
 //var cp      = require("child_process");
 //var wmlib   = process.argv[1].split("/").slice(0, -2).join("/") + "/lib/"; // "WebModule/lib/"
 var argv    = process.argv.slice(2);
@@ -79,27 +84,34 @@ var options = _parseCommandLineOptions({
         aac:        false,      // Boolean: save aac file
         mp4:        false,      // Boolean: save mp4 file
         pcm:        false,      // Boolean: save pcm
+        server:     false,      // Boolean:
+        port:       0,          // UINT32: port number
     });
 
-if (options.help || options.playlist === "") {
+if (options.help || (!options.server && !options.playlist)) {
     console.log(CONSOLE_COLOR.YELLOW + USAGE + CONSOLE_COLOR.CLEAR);
     return;
 }
 
-if (options.verbose) {
+if (options.server) {
+    var server = new HLSDumpServer({
+            verbose:        options.verbose,
+            port:           options.port,
+        });
+} else {
+    var dump = new HLSDump(options.playlist, {
+            verbose:        options.verbose,
+            dir:            options.dir, // "./" or "./{timestamp}/"
+            autoStart:      false,
+            bulkDuration:   1,
+            readyCallback:  function() {
+                dump.start();
+            },
+            aac:            options.aac,
+            mp4:            options.mp4,
+            pcm:            options.pcm,
+        });
 }
-
-var dump = new HLSDump(options.playlist, {
-    dir:            options.dir, // "./" or "./{timestamp}/"
-    autoStart:      false,
-    bulkDuration:   1,
-    readyCallback:  function() {
-        dump.start();
-    },
-    aac:            options.aac,
-    mp4:            options.mp4,
-    pcm:            options.pcm,
-});
 
 function _parseCommandLineOptions(options) { // @arg Object:
                                              // @ret Object:
@@ -109,10 +121,15 @@ function _parseCommandLineOptions(options) { // @arg Object:
         case "--help":      options.help = true; break;
         case "-v":
         case "--verbose":   options.verbose = true; break;
-        case "-d":          options.outputdir = argv[++i]; break;
+        case "-d":
+        case "--dir":       options.dir = argv[++i]; break;
         case "-aac":        options.aac = true; break;
         case "-mp4":        options.mp4 = true; break;
         case "-pcm":        options.pcm = true; break;
+        case "-p":
+        case "--port":      options.port = parseInt(argv[++i], 10); break;
+        case "-s":
+        case "--server":    options.server = true; break;
         default:            options.playlist = argv[i];
         }
     }
@@ -125,4 +142,3 @@ function _multiline(fn) { // @arg Function:
 }
 
 })(GLOBAL);
-

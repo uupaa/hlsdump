@@ -1,6 +1,6 @@
 {
   "name": "uupaa.hlsdump",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "HLS dump",
   "url": "https://github.com/uupaa/hlsdump",
   "keywords": ["uupaa", "WebModule", "Unstable"],
@@ -39,18 +39,21 @@
     "browser": {
       "output": "release/HLSDump.b.min.js",
       "source": [
+        "lib/HLSDumpServer.js",
         "lib/HLSDump.js"
       ]
     },
     "node": {
       "output": "release/HLSDump.n.min.js",
       "source": [
+        "lib/HLSDumpServer.js",
         "lib/HLSDump.js"
       ]
     },
     "el": {
       "output": "release/HLSDump.el.min.js",
       "source": [
+        "lib/HLSDumpServer.js",
         "lib/HLSDump.js"
       ]
     }
@@ -65,7 +68,8 @@
     "uupaa.filestore.js": "",
     "uupaa.fileloader.js": "",
     "uupaa.mp4muxer.js": "",
-    "uupaa.mp4builder.js": ""
+    "uupaa.mp4builder.js": "",
+    "express": ""
   },
   "devDependencies": {},
   "lib": "./lib/",
